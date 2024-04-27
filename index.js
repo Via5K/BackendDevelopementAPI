@@ -16,14 +16,17 @@ app.use(cors({
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
     res.sendFile(__dirname + '/views/index.html');
 });
 
 function invalidDatePassed(req, res) {
-    res.json({
+    console.log("Error");
+    var obj = {
         error: "Invalid Date"
-    });
+    }
+    console.log(obj)
+    res.json(obj);
 }
 app.get("/api/", (req, res) => {
     // var current = new Date();
@@ -42,42 +45,93 @@ app.get("/api/:date", (req, res) => {
     var datePassed = (req.params.date).toString();
     var unixDate;
     var UTCDate;
-    if (datePassed.includes("-")) {
-        UTCDate = new Date(datePassed).toString();
-        unixDate = new Date(datePassed).getTime();
-        var validUnix = unixDate.toString();
-        console.log(unixDate);
+    console.log("Date Passed: " + datePassed);
 
-        if (UTCDate.includes("Invalid") || validUnix.includes("Invalid")) {
-            console.log("Invalid Date provided in - format");
-            invalidDatePassed(req, res);
-        }
-    } else {
+    justDate = new Date(datePassed).toUTCString();
+    console.log("JustDate:" + justDate)
+    if (justDate.includes("Invalid")) {
+        console.log("Invalid Date provided Checking for Number");
         datePassed = Number(datePassed);
-        UTCDate = new Date(datePassed).toString();
+        console.log(datePassed);
         unixDate = new Date(datePassed).getTime();
         var validUnix = unixDate.toString();
-        console.log(unixDate);
+        console.log("UnixFomrat" + unixDate);
+        console.log("ValidUnixFomrat" + Number.isNaN(datePassed));
 
-        if (UTCDate.includes("Invalid") || validUnix.includes("Invalid")) {
-            console.log("Invalid Date provided in - format");
+        if (validUnix.includes("Invalid") || (Number.isNaN(datePassed) == true)) {
+
+            // console.log("Inside invalid method")
+            // res.json({
+            // error: "Invalid Date"
+            // });
             invalidDatePassed(req, res);
+        } else {
+            // datePassed = Number(datePassed);
+            UTCDate = new Date(datePassed).toUTCString();
+            //     
+            var obj = {
+                unix: unixDate,
+                utc: UTCDate
+            };
+            console.log(obj);
+            res.json(
+                obj
+            );
         }
+
+    } else {
+        UTCDate = justDate;
+        // datePassed = Number(datePassed);
+        unixDate = new Date(datePassed).getTime();
+        var validUnix = unixDate.toString();
+        console.log("UnixFomrat" + unixDate);
+
+        var obj = {
+            unix: unixDate,
+            utc: UTCDate
+        };
+        console.log(obj);
+        res.json(
+            obj
+        );
     }
 
+    // if (datePassed.includes("-")) {
+    //     UTCDate = new Date(datePassed).toString();
+    //     unixDate = new Date(datePassed).getTime();
+    //     var validUnix = unixDate.toString();
+    //     console.log(unixDate);
 
-    var obj = {
-        unix: unixDate,
-        utc: UTCDate
-    };
-    res.json(
-        obj
-    );
+    //     if (UTCDate.includes("Invalid") || validUnix.includes("Invalid")) {
+    //         console.log("Invalid Date provided in - format");
+    //         invalidDatePassed(req, res);
+    //     }
+    // } else {
+    //     datePassed = Number(datePassed);
+    //     UTCDate = new Date(datePassed).toString();
+    //     unixDate = new Date(datePassed).getTime();
+    //     var validUnix = unixDate.toString();
+    //     console.log(unixDate);
+
+    //     if (UTCDate.includes("Invalid") || validUnix.includes("Invalid")) {
+    //         console.log("Invalid Date provided in - format");
+    //         invalidDatePassed(req, res);
+    //     }
+    // }
+
+
+    // var obj = {
+    //     unix: unixDate,
+    //     utc: UTCDate
+    // };
+    // res.json(
+    //     obj
+    // );
 });
 
 
 // your first API endpoint... 
-app.get("/api/hello", function(req, res) {
+app.get("/api/hello", function (req, res) {
     res.json({
         greeting: 'hello API'
     });
@@ -86,6 +140,6 @@ app.get("/api/hello", function(req, res) {
 
 
 // Listen on port set in environment variable or default to 3000
-var listener = app.listen(process.env.PORT || 3000, function() {
+var listener = app.listen(process.env.PORT || 3000, function () {
     console.log('Your app is listening on port ' + listener.address().port);
 });
