@@ -73,18 +73,26 @@ app.route('/api/users').post((req, res, done) => {
 
 //GET USERS LOG
 app.get('/api/users/:_id/logs', (req, res, done) => {
+  console.log("Inside api/users/_id/logs")
+  console.log(req.query);
   const id = req.params._id;
-
+  var obj;
   const paramLimit = req.query.limit;
   console.log("this is id:" + id);
   Exercise.findById({
     _id: id
-  }, (err, user) => {
+  }, async (err, user) => {
+
     if (err) return console.log("Failed to get the user from databse with logs");
     else console.log("Success, the user is retrieved from database with logs");
-    console.log("this is the user retrieved: " + user)
+    await console.log("this is the user retrieved: " + user)
     console.log("Running query filters")
     let logs = user.log;
+    logs = logs.map(log => ({
+      description: log.description,
+      duration: log.duration,
+      date: log.date
+    }));
     if (req.query.from || req.query.to) {
       let fromDate = req.query.from ? new Date(req.query.from) : new Date(0); // If 'from' is not provided, set to beginning of time
       let toDate = req.query.to ? new Date(req.query.to) : new Date(); // If 'to' is not provided, set to current date
@@ -92,11 +100,7 @@ app.get('/api/users/:_id/logs', (req, res, done) => {
         const logDate = new Date(log.date);
         return logDate >= fromDate && logDate <= toDate;
       });
-      logs = logs.map(log => ({
-        description: log.description,
-        duration: log.duration,
-        date: log.date
-      }));
+
       var allLogsBetweenQuery;
       console.log("First Logs print");
       console.log(logs);
@@ -109,13 +113,32 @@ app.get('/api/users/:_id/logs', (req, res, done) => {
       console.log("Prinitng with limit");
       console.log(allLogsBetweenQuery);
 
+      obj = {
+        _id: user._id,
+        username: user.username,
+        from: new Date(req.query.from).toDateString(),
+        to: new Date(req.query.to).toDateString(),
+        count: allLogsBetweenQuery.length,
+        log: allLogsBetweenQuery
+      }
+    } else {
+      // if(req.query.limit){
+      if (req.query.limit) {
+        logs = logs.slice(0, Number(req.query.limit));
+        // console.log(allLogsBetweenQuery);
+      }
+      // }
+      console.log("else staetment")
+      obj = {
+        username: user.username,
+        count: logs.length,
+        _id: user._id,
+        log: logs
+      }
+
     }
-    obj = {
-      username: user.username,
-      count: user.log.length,
-      _id: user._id,
-      log: allLogsBetweenQuery
-    }
+    console.log("printing what will be printed on scrren ");
+    console.log(obj);
     res.json(obj);
     done(null, user);
 
