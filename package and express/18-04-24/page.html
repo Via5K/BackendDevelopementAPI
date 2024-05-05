@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>18-04-24</title>
+</head><body>Node and Express<br/>
+<br/>
+<br/>
+<b>install and manage packages from npm, which are collections of smaller modules<br/>
+<br/>
+</b><br/>
+<b>Express:</b>&nbsp;Express makes it much easier to create a server and handle routing for your application, which handles things like directing people to the correct page when they visit a certain endpoint like /blog<br/>
+<br/>
+Running the File on server;<br/>
+<b>npm run</b>&nbsp;&lt;cmd&gt; will goto package.json and look for what to run?<br/>
+Replace cmd with <b>start </b>make sure that in pacakge.json you have a key as start and value should be :"node mainFile.js"<br/>
+Hence now you can run using: <b>npm run start<br/>
+</b><b><br/>
+</b><b>OR </b>you can create automatic watch whenever the file is saved, it would automatically restart the server.<br/>
+this can be done by navigating to package.json and in <b>start </b>make sure that when you are adding "<b>node --watch mainFile.js</b>" this will make sure that whenever the file is saved, it restarts the server.<br/>
+<br/>
+<br/>
+<br/>
+<b>app.listen(port)</b>. It tells your server to listen on a given port, putting it in running state.<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+In Express, routes takes the following structure:  app.METHOD(PATH, HANDLER)  METHOD is an http method in lowercase. PATH is a relative path on the server (it can be a string, or even a regular expression). HANDLER is a function that Express calls when the route is matched. Handlers take the form function(req, res) {...},where req is the request object, and res is the response object. <br/>
+<br/>
+<b>function(req, res) { res.send('Response String'); } </b><br/>
+<br/>
+will serve the string 'Response String'.<br/>
+<br/>
+<br/>
+app.get() is used to serve the string<br/>
+<br/>
+<br/>
+<img src="image.png" /><br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<b>res.sendFile(path)</b>&nbsp;can be used to serve an HTML or some other file whenever an endpoint is hit.<br/>
+<br/>
+<b><i><u>NOTE it requires absolute filepath</u></i></b><br/>
+<br/>
+<b>__dirname</b>?<br/>
+Dirname is used as node global variable which is used to calculate the absolute filepath for the files. If we use Dirname, it taks the path of the directory adn then after that we can add the relative filepath.<br/>
+<br/>
+<br/>
+<b>express.static(path)</b><br/>
+This can be used as a static path for you files like stylesheet, images, or other site assets. <br/>
+note this also requires path in absolute filepath.<br/>
+Using, express.static so serve CSS<span style="font-size: 14pt">.</span>&nbsp;<br/>
+<br/>
+<img src="image 2.png" /><br/>
+<br/>
+<br/>
+<br/>
+<b>Building first API<br/>
+<br/>
+</b>To do that we will create a get route, on /json. Making sure that when it is called we display some json.<b><br/>
+</b><b><br/>
+</b>Serving response as JSON we use<b>&nbsp;res.json(params)<br/>
+</b><b>@params: </b>We can give key value pair of the information we want to display.<b><br/>
+</b><b><br/>
+<img src="image 3.png" /><br/>
+<br/>
+OUTPUT:<br/>
+</b><img src="image 4.png" /><br/>
+<br/>
+<br/>
+<br/>
+<b>.env<br/>
+<br/>
+</b>.env file is a hidden file that can contain our secrets.it can pass env. variables to your application.<br/>
+<br/>
+access environment variables:<br/>
+<b>process.env.variable_name</b><br/>
+<br/>
+By Convention variable name shoudl be all Caps seperated with underscores. We don't need to give key value pairs in string. it can be like<br/>
+eg:<br/>
+Password=Neeraj123@<br/>
+<br/>
+<b><i><u>NOTE: You see there are no space around Equals, it is mandatory to not have spaces around equals (=).<br/>
+<br/>
+</u></i></b></body></html>

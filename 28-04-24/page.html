@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>28-04-24</title>
+</head><body>Create something like this:<br/>
+https://request-header-parser-microservice.freecodecamp.rocks/<br/>
+<br/>
+<br/>
+<ul><li>You should provide your own project, not the example URL.</li>
+<li>Waiting:A request to /api/whoami should return a JSON object with your IP address in the ipaddress key.</li>
+<li>Waiting:A request to /api/whoami should return a JSON object with your preferred language in the language key.</li>
+<li>Waiting:A request to /api/whoami should return a JSON object with your software in the software key.</li>
+</ul>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+Solution:<br/>
+<br/>
+// index.js<br/>
+// where your node app starts<br/>
+<br/>
+// init project<br/>
+require('dotenv').config();<br/>
+var express = require('express');<br/>
+var app = express();<br/>
+var bodyParser = require('body-parser');<br/>
+// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)<br/>
+// so that your API is remotely testable by FCC<br/>
+var cors = require('cors');<br/>
+app.use(cors({<br/>
+&nbsp; optionsSuccessStatus: 200<br/>
+})); // some legacy browsers choke on 204<br/>
+app.use(bodyParser.urlencoded({<br/>
+&nbsp; encoded: false<br/>
+}));<br/>
+// http://expressjs.com/en/starter/static-files.html<br/>
+app.use(express.static('public'));<br/>
+<br/>
+// http://expressjs.com/en/starter/basic-routing.html<br/>
+app.get('/', function (req, res) {<br/>
+&nbsp; res.sendFile(__dirname + '/views/index.html');<br/>
+});<br/>
+<br/>
+app.get('/api/whoami', function (req, res) {<br/>
+&nbsp; var ipaddress = req.ip;<br/>
+&nbsp; // console.log(req.headers['user-agent']);<br/>
+&nbsp; // console.log(req.headers.user-agent);<br/>
+&nbsp; // console.log();<br/>
+&nbsp; var language = req.headers['accept-language'];<br/>
+&nbsp; var software = req.headers['user-agent'];<br/>
+&nbsp; // console.log(ipaddress);<br/>
+&nbsp; var obj = {<br/>
+&nbsp; &nbsp; ipaddress: ipaddress,<br/>
+&nbsp; &nbsp; language: language,<br/>
+&nbsp; &nbsp; software: software<br/>
+&nbsp; };<br/>
+&nbsp; res.json(obj);<br/>
+});<br/>
+<br/>
+// your first API endpoint...<br/>
+app.get('/api/hello', function (req, res) {<br/>
+&nbsp; res.json({<br/>
+&nbsp; &nbsp; greeting: 'hello API'<br/>
+&nbsp; });<br/>
+});<br/>
+<br/>
+// listen for requests :)<br/>
+var listener = app.listen(process.env.PORT || 3000, function () {<br/>
+&nbsp; console.log('Your app is listening on port ' + listener.address().port);<br/>
+});<br/>
+<br/>
+<br/>
+</body></html>

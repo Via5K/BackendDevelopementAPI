@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>26-04-24</title>
+</head><body>Remove all the objects with specific name from databse:<br/>
+<img src="image.png" /><br/>
+<br/>
+<br/>
+Query Chain,<br/>
+<br/>
+This is the process of refinig the executing query before performing that on database first and then performing the actual query.<br/>
+We have used .find() to find the matching objects in the database using vaouriteFoods. We needed all teh objects which has burrito as the fav.Food. so we get all teh documents.<br/>
+Now, we want to make sure all of them are sorted based on the name; here 1 means ascending and -1 will mean descending. After sorting the docuemnts based on name, we limit the documents searched to only 2 docuements. After limiting we are saying select(). which means that which columns are we requesting? Here we said age:0 which means we want to hide age, where'as if we would have wanted to include it, we would have written something lie age:1.<br/>
+At the end we are doing .exec() which is executing the query on the databse. Meaning first we built all the filters and then executed that query.<br/>
+<img src="image 2.png" /><br/>
+<br/>
+</body></html>

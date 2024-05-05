@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>27-04-24</title>
+</head><body>Build a full stack JavaScript app that is functionally which should be able to handle these things:<ul><li><b>You should provide your own project, not the example URL. --done</b></li>
+<li><b>Waiting:A request to /api/:date? with a valid date should return a JSON object with a unix key that is a Unix timestamp of the input date in milliseconds (as type Number) --done</b></li>
+<li><b>Waiting:A request to /api/:date? with a valid date should return a JSON object with a utc key that is a string of the input date in the format: Thu, 01 Jan 1970 00:00:00 GMT --done</b></li>
+<li><b>Waiting:A request to /api/1451001600000 should return { unix: 1451001600000, utc: "Fri, 25 Dec 2015 00:00:00 GMT" } --done</b></li>
+<li><b>Waiting:Your project can handle dates that can be successfully parsed by new Date(date_string) --done</b></li>
+<li><b>Waiting:If the input date string is invalid, the API returns an object having the structure { error : "Invalid Date" } --done</b></li>
+<li><b>Waiting:An empty date parameter should return the current time in a JSON object with a unix key --done</b></li>
+<li><b>Waiting:An empty date parameter should return the current time in a JSON object with a utc key --done</b></li>
+</ul>
+&nbsp;<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<span style="background-color: #ffffff"><span style="font-family: Consolas"><span style="font-size: 14pt">// index.js// index.js<br/>
+// where your node app starts<br/>
+<br/>
+// init project<br/>
+var express = require('express');<br/>
+var app = express();<br/>
+<br/>
+// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)<br/>
+// so that your API is remotely testable by FCC <br/>
+var cors = require('cors');<br/>
+app.use(cors({<br/>
+&nbsp; &nbsp; optionsSuccessStatus: 200<br/>
+})); // some legacy browsers choke on 204<br/>
+<br/>
+// http://expressjs.com/en/starter/static-files.html<br/>
+app.use(express.static('public'));<br/>
+<br/>
+// http://expressjs.com/en/starter/basic-routing.html<br/>
+app.get("/", function (req, res) {<br/>
+&nbsp; &nbsp; res.sendFile(__dirname + '/views/index.html');<br/>
+});<br/>
+<br/>
+function invalidDatePassed(req, res) {<br/>
+&nbsp; &nbsp; console.log("Error");<br/>
+&nbsp; &nbsp; var obj = {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; error: "Invalid Date"<br/>
+&nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; console.log(obj)<br/>
+&nbsp; &nbsp; res.json(obj);<br/>
+}<br/>
+app.get("/api/", (req, res) =&gt; {<br/>
+&nbsp; &nbsp; // var current = new Date();<br/>
+&nbsp; &nbsp; var unixDate = new Date().getTime();<br/>
+&nbsp; &nbsp; var utcDate = new Date().toString();<br/>
+<br/>
+&nbsp; &nbsp; var obj = {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; unix: unixDate,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; utc: utcDate<br/>
+&nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; console.log(obj);<br/>
+&nbsp; &nbsp; res.json(obj);<br/>
+&nbsp; &nbsp; // done();<br/>
+});<br/>
+app.get("/api/:date", (req, res) =&gt; {<br/>
+&nbsp; &nbsp; var datePassed = (req.params.date).toString();<br/>
+&nbsp; &nbsp; var unixDate;<br/>
+&nbsp; &nbsp; var UTCDate;<br/>
+&nbsp; &nbsp; console.log("Date Passed: " + datePassed);<br/>
+<br/>
+&nbsp; &nbsp; justDate = new Date(datePassed).toUTCString();<br/>
+&nbsp; &nbsp; console.log("JustDate:" + justDate)<br/>
+&nbsp; &nbsp; if (justDate.includes("Invalid")) {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log("Invalid Date provided Checking for Number");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; datePassed = Number(datePassed);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log(datePassed);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; unixDate = new Date(datePassed).getTime();<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; var validUnix = unixDate.toString();<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log("UnixFomrat" + unixDate);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log("ValidUnixFomrat" + Number.isNaN(datePassed));<br/>
+<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (validUnix.includes("Invalid") || (Number.isNaN(datePassed) == true)) {<br/>
+<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // console.log("Inside invalid method")<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // res.json({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // error: "Invalid Date"<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // });<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; invalidDatePassed(req, res);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; } else {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // datePassed = Number(datePassed);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; UTCDate = new Date(datePassed).toUTCString();<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // &nbsp; &nbsp; <br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; var obj = {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; unix: unixDate,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; utc: UTCDate<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; };<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; console.log(obj);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; res.json(<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; obj<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; );<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; }<br/>
+<br/>
+&nbsp; &nbsp; } else {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; UTCDate = justDate;<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; // datePassed = Number(datePassed);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; unixDate = new Date(datePassed).getTime();<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; var validUnix = unixDate.toString();<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log("UnixFomrat" + unixDate);<br/>
+<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; var obj = {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; unix: unixDate,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; utc: UTCDate<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; };<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log(obj);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; res.json(<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; obj<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; );<br/>
+&nbsp; &nbsp; }<br/>
+<br/>
+&nbsp; &nbsp; // if (datePassed.includes("-")) {<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; UTCDate = new Date(datePassed).toString();<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; unixDate = new Date(datePassed).getTime();<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; var validUnix = unixDate.toString();<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; console.log(unixDate);<br/>
+<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; if (UTCDate.includes("Invalid") || validUnix.includes("Invalid")) {<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; console.log("Invalid Date provided in - format");<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; invalidDatePassed(req, res);<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; // } else {<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; datePassed = Number(datePassed);<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; UTCDate = new Date(datePassed).toString();<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; unixDate = new Date(datePassed).getTime();<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; var validUnix = unixDate.toString();<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; console.log(unixDate);<br/>
+<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; if (UTCDate.includes("Invalid") || validUnix.includes("Invalid")) {<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; console.log("Invalid Date provided in - format");<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; invalidDatePassed(req, res);<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; // }<br/>
+<br/>
+<br/>
+&nbsp; &nbsp; // var obj = {<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; unix: unixDate,<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; utc: UTCDate<br/>
+&nbsp; &nbsp; // };<br/>
+&nbsp; &nbsp; // res.json(<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; obj<br/>
+&nbsp; &nbsp; // );<br/>
+});<br/>
+<br/>
+<br/>
+// your first API endpoint... <br/>
+app.get("/api/hello", function (req, res) {<br/>
+&nbsp; &nbsp; res.json({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; greeting: 'hello API'<br/>
+&nbsp; &nbsp; });<br/>
+});<br/>
+<br/>
+<br/>
+<br/>
+// Listen on port set in environment variable or default to 3000<br/>
+var listener = app.listen(process.env.PORT || 3000, function () {<br/>
+&nbsp; &nbsp; console.log('Your app is listening on port ' + listener.address().port);<br/>
+});<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+</span></span></span></body></html>

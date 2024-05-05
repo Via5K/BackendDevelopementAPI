@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>20-04-24</title>
+</head><body>Middleware function,<br/>
+middleware fucntions can take 3 arguments i.e request object, applicants request-response cycle. These basically add information to request or response objects. If they dont send the response when they are done, then they start the execution of next function in the stack.this triggers teh 3rd argument<b>&nbsp;next()<br/>
+</b><b><br/>
+</b><b>Example</b><br/>
+<br/>
+function(req, res, next) { console.log("I'm a middleware..."); next(); } &nbsp;<br/>
+<br/>
+Express executes the methods sequentially, so in order to execute middleware first it should be mounted on top.<br/>
+Example of a middleware from exercise.<br/>
+<br/>
+<img src="image.png" /></body></html>

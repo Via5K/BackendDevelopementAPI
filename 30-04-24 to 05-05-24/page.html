@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>30-04-24</title>
+</head><body><div style="text-align: center"><span style="font-size: 16pt"><span style="font-size: 18pt"><span style="font-family: Lato">Exercise Tracker</span></span></span></div><span style="font-size: 1pt"><br/>
+</span><br/>
+Build a full stack JavaScript app that is functionally similar to this: <a href="https://exercise-tracker.freecodecamp.rocks/">https://exercise-tracker.freecodecamp.rocks</a><br/>
+<br/>
+<br/>
+Tests<ul><li>Waiting:You should provide your own project, not the example URL.</li>
+<li>Waiting:You can POST to /api/users with form data username to create a new user.</li>
+<li>Waiting:The returned response from POST /api/users with form data username will be an object with username and _id properties.</li>
+<li>Waiting:You can make a GET request to /api/users to get a list of all users.</li>
+<li>Waiting:The GET request to /api/users returns an array.</li>
+<li>Waiting:Each element in the array returned from GET /api/users is an object literal containing a user's username and _id.</li>
+<li>Waiting:You can POST to /api/users/:_id/exercises with form data description, duration, and optionally date. If no date is supplied, the current date will be used.</li>
+<li>Waiting:The response returned from POST /api/users/:_id/exercises will be the user object with the exercise fields added.</li>
+<li>Waiting:You can make a GET request to /api/users/:_id/logs to retrieve a full exercise log of any user.</li>
+<li>Waiting:A request to a user's log GET /api/users/:_id/logs returns a user object with a count property representing the number of exercises that belong to that user.</li>
+<li>Waiting:A GET request to /api/users/:_id/logs will return the user object with a log array of all the exercises added.</li>
+<li>Waiting:Each item in the log array that is returned from GET /api/users/:_id/logs is an object that should have a description, duration, and date properties.</li>
+<li>Waiting:The description property of any object in the log array that is returned from GET /api/users/:_id/logs should be a string.</li>
+<li>Waiting:The duration property of any object in the log array that is returned from GET /api/users/:_id/logs should be a number.</li>
+<li>Waiting:The date property of any object in the log array that is returned from GET /api/users/:_id/logs should be a string. Use the dateString format of the Date API.</li>
+<li>Waiting:You can add from, to and limit parameters to a GET /api/users/:_id/logs request to retrieve part of the log of any user. from and to are dates in yyyy-mm-dd format. limit is an integer of how many logs to send back.</li>
+</ul>
+<br/>
+&nbsp;<br/>
+<br/>
+<br/>
+<br/>
+Tests<ul><li>Passed:You should provide your own project, not the example URL.</li>
+<li>Passed:You can POST to /api/users with form data username to create a new user.</li>
+<li>Passed:The returned response from POST /api/users with form data username will be an object with username and _id properties.</li>
+<li>Passed:You can make a GET request to /api/users to get a list of all users.</li>
+<li>Passed:The GET request to /api/users returns an array.</li>
+<li>Passed:Each element in the array returned from GET /api/users is an object literal containing a user's username and _id.</li>
+<li>Passed:You can POST to /api/users/:_id/exercises with form data description, duration, and optionally date. If no date is supplied, the current date will be used.</li>
+<li>Passed:The response returned from POST /api/users/:_id/exercises will be the user object with the exercise fields added.</li>
+<li>Passed:You can make a GET request to /api/users/:_id/logs to retrieve a full exercise log of any user.</li>
+<li>Passed:A request to a user's log GET /api/users/:_id/logs returns a user object with a count property representing the number of exercises that belong to that user.</li>
+<li>Passed:A GET request to /api/users/:_id/logs will return the user object with a log array of all the exercises added.</li>
+<li>Passed:Each item in the log array that is returned from GET /api/users/:_id/logs is an object that should have a description, duration, and date properties.</li>
+<li>Passed:The description property of any object in the log array that is returned from GET /api/users/:_id/logs should be a string.</li>
+<li>Passed:The duration property of any object in the log array that is returned from GET /api/users/:_id/logs should be a number.</li>
+<li>Passed:The date property of any object in the log array that is returned from GET /api/users/:_id/logs should be a string. Use the dateString format of the Date API.</li>
+<li>Failed:You can add from, to and limit parameters to a GET /api/users/:_id/logs request to retrieve part of the log of any user. from and to are dates in yyyy-mm-dd format. limit is an integer of how many logs to send back.</li>
+</ul>
+<br/>
+&nbsp;<br/>
+<br/>
+CODE:<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+const express = require('express')<br/>
+const app = express()<br/>
+const cors = require('cors')<br/>
+// const underscore = require('underscore.js');<br/>
+const mongoose = require('mongoose');<br/>
+const dotenv = require('dotenv').config()<br/>
+const bodyParser = require('body-parser');<br/>
+app.use(cors({<br/>
+&nbsp; origin: '*'<br/>
+}))<br/>
+app.use(bodyParser.urlencoded({<br/>
+&nbsp; extended: true<br/>
+}));<br/>
+const url = process.env.MONGO_URI;<br/>
+mongoose.connect(url, {<br/>
+&nbsp; useNewUrlParser: true,<br/>
+&nbsp; useUnifiedTopology: true<br/>
+});<br/>
+app.use(express.static('public'))<br/>
+app.get('/', (req, res) =&gt; {<br/>
+&nbsp; res.sendFile(__dirname + '/views/index.html')<br/>
+});<br/>
+<br/>
+const exercise = new mongoose.Schema({<br/>
+&nbsp; username: {<br/>
+&nbsp; &nbsp; type: String,<br/>
+&nbsp; &nbsp; required: true<br/>
+&nbsp; },<br/>
+&nbsp; log: [{<br/>
+&nbsp; &nbsp; description: {<br/>
+&nbsp; &nbsp; &nbsp; type: String<br/>
+&nbsp; &nbsp; },<br/>
+&nbsp; &nbsp; duration: {<br/>
+&nbsp; &nbsp; &nbsp; type: Number<br/>
+&nbsp; &nbsp; },<br/>
+&nbsp; &nbsp; date: {<br/>
+&nbsp; &nbsp; &nbsp; type: String<br/>
+&nbsp; &nbsp; }<br/>
+&nbsp; }]<br/>
+});<br/>
+let Exercise = mongoose.model('Exercise', exercise);<br/>
+<br/>
+//CREATE USERS<br/>
+app.route('/api/users').post((req, res, done) =&gt; {<br/>
+&nbsp; // console.log("API/USERS");<br/>
+&nbsp; var username = req.body.username;<br/>
+&nbsp; // console.log("AFTER API/USERS");<br/>
+&nbsp; console.log(username);<br/>
+&nbsp; var user1 = new Exercise({<br/>
+&nbsp; &nbsp; username: username<br/>
+&nbsp; });<br/>
+&nbsp; console.log(user1);<br/>
+&nbsp; user1.save((err, data) =&gt; {<br/>
+&nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; done(null, data)<br/>
+&nbsp; });<br/>
+&nbsp; res.json({<br/>
+&nbsp; &nbsp; username: username,<br/>
+&nbsp; &nbsp; _id: user1._id<br/>
+&nbsp; })<br/>
+}).get((req, res, done) =&gt; {<br/>
+&nbsp; console.log("Start of /api/users");<br/>
+&nbsp; Exercise.find({}, (err, allusers) =&gt; {<br/>
+&nbsp; &nbsp; if (!err) {<br/>
+&nbsp; &nbsp; &nbsp; console.log(allusers);<br/>
+&nbsp; &nbsp; &nbsp; res.json(allusers);<br/>
+&nbsp; &nbsp; &nbsp; done(null, allusers);<br/>
+&nbsp; &nbsp; } else return console.log("Error");<br/>
+&nbsp; });<br/>
+<br/>
+});<br/>
+<br/>
+//GET USERS LOG<br/>
+app.get('/api/users/:_id/logs', (req, res, done) =&gt; {<br/>
+&nbsp; console.log("Inside api/users/_id/logs")<br/>
+&nbsp; console.log(req.query);<br/>
+&nbsp; const id = req.params._id;<br/>
+&nbsp; var obj;<br/>
+&nbsp; const paramLimit = req.query.limit;<br/>
+&nbsp; console.log("this is id:" + id);<br/>
+&nbsp; Exercise.findById({<br/>
+&nbsp; &nbsp; _id: id<br/>
+&nbsp; }, async (err, user) =&gt; {<br/>
+<br/>
+&nbsp; &nbsp; if (err) return console.log("Failed to get the user from databse with logs");<br/>
+&nbsp; &nbsp; else console.log("Success, the user is retrieved from database with logs");<br/>
+&nbsp; &nbsp; await console.log("this is the user retrieved: " + user)<br/>
+&nbsp; &nbsp; console.log("Running query filters")<br/>
+&nbsp; &nbsp; let logs = user.log;<br/>
+&nbsp; &nbsp; logs = logs.map(log =&gt; ({<br/>
+&nbsp; &nbsp; &nbsp; description: log.description,<br/>
+&nbsp; &nbsp; &nbsp; duration: log.duration,<br/>
+&nbsp; &nbsp; &nbsp; date: log.date<br/>
+&nbsp; &nbsp; }));<br/>
+&nbsp; &nbsp; if (req.query.from || req.query.to) {<br/>
+&nbsp; &nbsp; &nbsp; let fromDate = req.query.from ? new Date(req.query.from) : new Date(0); // If 'from' is not provided, set to beginning of time<br/>
+&nbsp; &nbsp; &nbsp; let toDate = req.query.to ? new Date(req.query.to) : new Date(); // If 'to' is not provided, set to current date<br/>
+&nbsp; &nbsp; &nbsp; logs = logs.filter(log =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; const logDate = new Date(log.date);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; return logDate &gt;= fromDate &amp;&amp; logDate &lt;= toDate;<br/>
+&nbsp; &nbsp; &nbsp; });<br/>
+<br/>
+&nbsp; &nbsp; &nbsp; var allLogsBetweenQuery;<br/>
+&nbsp; &nbsp; &nbsp; console.log("First Logs print");<br/>
+&nbsp; &nbsp; &nbsp; console.log(logs);<br/>
+&nbsp; &nbsp; &nbsp; if (req.query.limit) {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; allLogsBetweenQuery = logs.slice(0, Number(paramLimit));<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; // console.log(allLogsBetweenQuery);<br/>
+&nbsp; &nbsp; &nbsp; } else {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; allLogsBetweenQuery = logs;<br/>
+&nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; &nbsp; console.log("Prinitng with limit");<br/>
+&nbsp; &nbsp; &nbsp; console.log(allLogsBetweenQuery);<br/>
+<br/>
+&nbsp; &nbsp; &nbsp; obj = {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; _id: user._id,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; username: user.username,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; from: new Date(req.query.from).toDateString(),<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; to: new Date(req.query.to).toDateString(),<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; count: allLogsBetweenQuery.length,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; log: allLogsBetweenQuery<br/>
+&nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; } else {<br/>
+&nbsp; &nbsp; &nbsp; // if(req.query.limit){<br/>
+&nbsp; &nbsp; &nbsp; if (req.query.limit) {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; logs = logs.slice(0, Number(req.query.limit));<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; // console.log(allLogsBetweenQuery);<br/>
+&nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; &nbsp; // }<br/>
+&nbsp; &nbsp; &nbsp; console.log("else staetment")<br/>
+&nbsp; &nbsp; &nbsp; obj = {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; username: user.username,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; count: logs.length,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; _id: user._id,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; log: logs<br/>
+&nbsp; &nbsp; &nbsp; }<br/>
+<br/>
+&nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; console.log("printing what will be printed on scrren ");<br/>
+&nbsp; &nbsp; console.log(obj);<br/>
+&nbsp; &nbsp; res.json(obj);<br/>
+&nbsp; &nbsp; done(null, user);<br/>
+<br/>
+&nbsp; });<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+});<br/>
+<br/>
+//ADD EXERCISE<br/>
+app.post('/api/users/:_id/exercises', (req, res, done) =&gt; {<br/>
+&nbsp; const id = req.params._id;<br/>
+&nbsp; const description = req.body.description;<br/>
+&nbsp; const duration = req.body.duration;<br/>
+&nbsp; const date = req.body.date;<br/>
+&nbsp; console.log(typeof (date));<br/>
+&nbsp; var formattedDate;<br/>
+&nbsp; if (date == null || date == '') {<br/>
+&nbsp; &nbsp; formattedDate = new Date().toDateString();<br/>
+&nbsp; } else {<br/>
+&nbsp; &nbsp; formattedDate = new Date(date).toDateString();<br/>
+&nbsp; }<br/>
+&nbsp; console.log("ID = " + id + " description= " + description + " Duration = " + duration + " date = " + date + " formattedDate = " + formattedDate);<br/>
+&nbsp; console.log("Finding user by id now");<br/>
+&nbsp; Exercise.findById(id, (err, user) =&gt; {<br/>
+&nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; console.log("data Username:" + user.username);<br/>
+&nbsp; &nbsp; var toBeAddedInLogobject = {<br/>
+&nbsp; &nbsp; &nbsp; description: description,<br/>
+&nbsp; &nbsp; &nbsp; duration: duration,<br/>
+&nbsp; &nbsp; &nbsp; date: formattedDate<br/>
+&nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; console.log("Iam to be added:" + toBeAddedInLogobject);<br/>
+&nbsp; &nbsp; user.log.push(toBeAddedInLogobject);<br/>
+&nbsp; &nbsp; // existingExerciseLogObject.push(toBeAddedInLogobject);<br/>
+<br/>
+&nbsp; &nbsp; // var exerciseLogObject = [{<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; description: description<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; },<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; {<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; duration: duration<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; },<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; {<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; date: formattedDate<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; // &nbsp; &nbsp; ]<br/>
+&nbsp; &nbsp; // user.description = description;<br/>
+&nbsp; &nbsp; // user.date = formattedDate;<br/>
+&nbsp; &nbsp; // user.duration = duration;<br/>
+&nbsp; &nbsp; const arraySize = user.log.length;<br/>
+&nbsp; &nbsp; console.log("Size of Exercise is:" + arraySize);<br/>
+&nbsp; &nbsp; obj = {<br/>
+&nbsp; &nbsp; &nbsp; username: user.username,<br/>
+&nbsp; &nbsp; &nbsp; description: user.log[arraySize - 1].description,<br/>
+&nbsp; &nbsp; &nbsp; duration: user.log[arraySize - 1].duration,<br/>
+&nbsp; &nbsp; &nbsp; date: user.log[arraySize - 1].date,<br/>
+&nbsp; &nbsp; &nbsp; // log: exerciseLogObject,<br/>
+&nbsp; &nbsp; &nbsp; _id: user._id,<br/>
+&nbsp; &nbsp; }<br/>
+<br/>
+<br/>
+&nbsp; &nbsp; console.log("See what is getting Updated now: " + obj);<br/>
+&nbsp; &nbsp; Exercise.updateOne({<br/>
+&nbsp; &nbsp; &nbsp; _id: id<br/>
+&nbsp; &nbsp; }, user, (error, userInfo) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; if (error) return console.log("Failed to save the user to database");<br/>
+&nbsp; &nbsp; &nbsp; else console.log("User information updated to database");<br/>
+&nbsp; &nbsp; &nbsp; // res.json(obj);<br/>
+&nbsp; &nbsp; &nbsp; done(null, userInfo);<br/>
+&nbsp; &nbsp; });<br/>
+&nbsp; &nbsp; res.json(obj);<br/>
+&nbsp; &nbsp; done(null, user);<br/>
+<br/>
+&nbsp; });<br/>
+<br/>
+<br/>
+&nbsp; // const user = Exercise.findById(id, (err, data) =&gt; {<br/>
+&nbsp; // &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; // &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; // &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; // });<br/>
+&nbsp; // //update the information<br/>
+&nbsp; // user.description = description;<br/>
+&nbsp; // user.date = formattedDate;<br/>
+&nbsp; // user.duration = duration;<br/>
+<br/>
+&nbsp; // // console.log(obj);<br/>
+&nbsp; // const userInfo = Exercise.updateOne({<br/>
+&nbsp; // &nbsp; &nbsp; _id: id<br/>
+&nbsp; // }, user, (error, userInfo) =&gt; {<br/>
+&nbsp; // &nbsp; &nbsp; if (error) return console.log("Failed to save the user to database");<br/>
+&nbsp; // &nbsp; &nbsp; else console.log("User information updated to database");<br/>
+&nbsp; // &nbsp; &nbsp; // console.log("dataUsername:" + data.description);<br/>
+<br/>
+&nbsp; // &nbsp; &nbsp; // console.log(userInfo);<br/>
+&nbsp; // &nbsp; &nbsp; done(null, userInfo);<br/>
+&nbsp; // });<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+&nbsp; // console.log("after user");<br/>
+&nbsp; // console.log(userInfo.username);<br/>
+<br/>
+&nbsp; // user.save((err, data) =&gt; {<br/>
+&nbsp; // &nbsp; &nbsp; if (err) return console.log("Failed to save the user to database");<br/>
+&nbsp; // &nbsp; &nbsp; else console.log("User information updated to database");<br/>
+&nbsp; // &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; // });<br/>
+&nbsp; // const userInfo = <br/>
+<br/>
+&nbsp; // console.log("username = " + user.username + " ID = " + user.id + " description= " + user.description + " Duration = " + user.duration + " date = " + user.date + " formattedDate = " + formattedDate);<br/>
+&nbsp; // obj = {<br/>
+&nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; username: user.username,<br/>
+&nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; description: user.description,<br/>
+&nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; duration: user.duration,<br/>
+&nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; date: user.date,<br/>
+&nbsp; // &nbsp; &nbsp; &nbsp; &nbsp; _id: user._id<br/>
+&nbsp; // &nbsp; &nbsp; }<br/>
+&nbsp; // &nbsp; &nbsp; // console.log(obj);<br/>
+<br/>
+&nbsp; // res.json(obj);<br/>
+});<br/>
+<br/>
+const listener = app.listen(process.env.PORT || 3000, () =&gt; {<br/>
+&nbsp; console.log('Your app is listening on port ' + listener.address().port)<br/>
+})</body></html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>29-04-24</title>
+</head><body><div style="text-align: center"><span style="font-family: Lato"><span style="font-size: 18pt"><span style="font-size: 16pt">URL Shortener Microservice</span></span></span></div><br/>
+<br/>
+Build a full stack JavaScript app that is functionally similar to this: <a href="https://url-shortener-microservice.freecodecamp.rocks/">https://url-shortener-microservice.freecodecamp.rocks</a>. <br/>
+<br/>
+<br/>
+<br/>
+require('dotenv').config();<br/>
+const express = require('express');<br/>
+const cors = require('cors');<br/>
+const dns = require('dns');<br/>
+<br/>
+const url = require('url');<br/>
+const app = express();<br/>
+<br/>
+const bodyParser = require('body-parser');<br/>
+app.use(bodyParser.urlencoded({<br/>
+&nbsp; &nbsp; encoded: false<br/>
+}));<br/>
+// Basic Configuration<br/>
+const port = process.env.PORT || 3000;<br/>
+var idVsUrl = new Map();<br/>
+var urlVsId = new Map();<br/>
+// var origin = [];<br/>
+app.use(cors({<br/>
+&nbsp; &nbsp; origin: '*'<br/>
+}));<br/>
+<br/>
+app.use('/public', express.static(`${process.cwd()}/public`));<br/>
+<br/>
+app.get('/', function(req, res) {<br/>
+&nbsp; &nbsp; res.sendFile(process.cwd() + '/views/index.html');<br/>
+});<br/>
+app.get('/api/shorturl/:id', (req, res, next) =&gt; {<br/>
+&nbsp; &nbsp; var id = Number(req.params.id);<br/>
+&nbsp; &nbsp; var url = idVsUrl.get(id).toString();<br/>
+&nbsp; &nbsp; console.log("id is: " + id);<br/>
+&nbsp; &nbsp; console.log("url is: " + url);<br/>
+&nbsp; &nbsp; // origin.push(url)<br/>
+&nbsp; &nbsp; // console.log("i am origin" + origin)<br/>
+&nbsp; &nbsp; res.status(301).redirect(url);<br/>
+&nbsp; &nbsp; next;<br/>
+&nbsp; &nbsp; // next();<br/>
+&nbsp; &nbsp; // done(null, req);<br/>
+});<br/>
+<br/>
+function validUrl(originalurl,res) {<br/>
+&nbsp; &nbsp; console.log("ORIGINALURL:" + originalurl)<br/>
+&nbsp; &nbsp; var shorturl = "";<br/>
+&nbsp; &nbsp; //returns the value if there exists a value already otehrwise null.<br/>
+&nbsp; &nbsp; const existingUrl = urlVsId.get(originalurl);<br/>
+&nbsp; &nbsp; if (existingUrl) {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; shorturl = existingUrl;<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log("Existing URL already there:" + shorturl);<br/>
+&nbsp; &nbsp; } else {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; var uniqueUrlIdentifier = Math.floor(Math.random() * 1000000) + 1<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log("UniqueIdentifier For URL is: " + uniqueUrlIdentifier);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; while (idVsUrl.get(uniqueUrlIdentifier)) {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; var uniqueUrlIdentifier = Math.floor(Math.random() * 1000000) + 1<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; console.log("New UniqueIdentifier For URL is: " + uniqueUrlIdentifier);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; shorturl = uniqueUrlIdentifier;<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; urlVsId.set(originalurl, uniqueUrlIdentifier);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; idVsUrl.set(uniqueUrlIdentifier, originalurl);<br/>
+&nbsp; &nbsp; }<br/>
+<br/>
+&nbsp; &nbsp; var obj = {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; original_url: originalurl,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; short_url: shorturl<br/>
+&nbsp; &nbsp; }<br/>
+<br/>
+&nbsp; &nbsp; res.json(obj);<br/>
+}<br/>
+app.route('/api/shorturl').post(async(req, res) =&gt; {<br/>
+&nbsp; &nbsp; console.log("POST");<br/>
+&nbsp; &nbsp; const errorCount = 0;<br/>
+&nbsp; &nbsp; var originalurl = req.body.url;<br/>
+&nbsp; &nbsp; var look = dns.lookup(url.parse(originalurl).hostname, async(err, address) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log("Inside lokup");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (!address) {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; res.json({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; error: "invalid url"<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; });<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; } else {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; await validUrl(originalurl, res);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; });<br/>
+<br/>
+});<br/>
+<br/>
+// Your first API endpoint<br/>
+app.get('/api/hello', function(req, res) {<br/>
+&nbsp; &nbsp; res.json({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; greeting: 'hello API'<br/>
+&nbsp; &nbsp; });<br/>
+});<br/>
+<br/>
+app.listen(port, function() {<br/>
+&nbsp; &nbsp; console.log(`Listening on port ${port}`);<br/>
+});<br/>
+<br/>
+<br/>
+</body></html>

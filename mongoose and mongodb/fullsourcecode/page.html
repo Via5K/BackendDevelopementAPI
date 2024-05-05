@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>FullSourceCode</title>
+</head><body><span style="font-size: 14pt"><span style="color: #dcdcaa"><span style="color: #cccccc"><span style="font-family: Consolas"><span style="background-color: #1f1f1f">require('dotenv').config();<br/>
+const mongoose = require('mongoose');<br/>
+<br/>
+mongoose.connect(process.env.MONGO_URI, {<br/>
+&nbsp; &nbsp; useNewUrlParser: true,<br/>
+&nbsp; &nbsp; useUnifiedTopology: true<br/>
+});<br/>
+<br/>
+const personSchema = new mongoose.Schema({<br/>
+&nbsp; &nbsp; name: {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; type: String,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; required: true<br/>
+&nbsp; &nbsp; },<br/>
+&nbsp; &nbsp; age: Number,<br/>
+&nbsp; &nbsp; favoriteFoods: [String]<br/>
+})<br/>
+<br/>
+let Person = mongoose.model('Person', personSchema);<br/>
+<br/>
+const createAndSavePerson = (done) =&gt; {<br/>
+&nbsp; &nbsp; let person1 = new Person({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; name: "Aman1",<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; age: 23,<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; favoriteFoods: [<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'Momos',<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'Colddrink',<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'Pumpkin',<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'chicken'<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; ]<br/>
+&nbsp; &nbsp; });<br/>
+<br/>
+&nbsp; &nbsp; person1.save((err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log(err);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; });<br/>
+<br/>
+};<br/>
+// createManyPeople();<br/>
+const createManyPeople = (arrayOfPeople, done) =&gt; {<br/>
+&nbsp; &nbsp; Person.create(arrayOfPeople, (err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; done(null, data)<br/>
+&nbsp; &nbsp; });<br/>
+<br/>
+&nbsp; &nbsp; // done(null, data);<br/>
+};<br/>
+<br/>
+const findPeopleByName = (personName, done) =&gt; {<br/>
+&nbsp; &nbsp; Person.find({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; name: personName<br/>
+&nbsp; &nbsp; }, (err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; }<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; })<br/>
+};<br/>
+<br/>
+const findOneByFood = (food, done) =&gt; {<br/>
+&nbsp; &nbsp; Person.findOne({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; favoriteFoods: food<br/>
+&nbsp; &nbsp; }, (err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; })<br/>
+};<br/>
+<br/>
+const findPersonById = (personId, done) =&gt; {<br/>
+&nbsp; &nbsp; Person.findById({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; _id: personId<br/>
+&nbsp; &nbsp; }, (err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; });<br/>
+};<br/>
+// findEditThenSave('66292de5ac2bc93eaef9050a');<br/>
+const findEditThenSave = (personId, done) =&gt; {<br/>
+&nbsp; &nbsp; const foodToAdd = "hamburger";<br/>
+&nbsp; &nbsp; var userPerson;<br/>
+&nbsp; &nbsp; Person.findById({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; _id: personId<br/>
+&nbsp; &nbsp; }, (err, person) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed first");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log(person.favoriteFoods);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; person.favoriteFoods.push(foodToAdd);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; person.save((err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; console.log("Inside save");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; });<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; console.log(person.favoriteFoods);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; // userPerson = person;<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; // done(null, person);<br/>
+&nbsp; &nbsp; })<br/>
+<br/>
+&nbsp; &nbsp; // console.log(userPerson);<br/>
+<br/>
+&nbsp; &nbsp; // done(null, data);<br/>
+&nbsp; &nbsp; // });<br/>
+<br/>
+};<br/>
+<br/>
+const findAndUpdate = (personName, done) =&gt; {<br/>
+&nbsp; &nbsp; const ageToSet = 20;<br/>
+&nbsp; &nbsp; Person.findOne({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; name: personName<br/>
+&nbsp; &nbsp; }, (err, person) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; person.age = ageToSet;<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; person.save((err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; });<br/>
+&nbsp; &nbsp; });<br/>
+};<br/>
+<br/>
+const removeById = (personId, done) =&gt; {<br/>
+&nbsp; &nbsp; // done(null /*, data*/ );<br/>
+&nbsp; &nbsp; Person.findById(personId, (err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; data.remove((err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; });<br/>
+&nbsp; &nbsp; });<br/>
+};<br/>
+<br/>
+const removeManyPeople = (done) =&gt; {<br/>
+&nbsp; &nbsp; const nameToRemove = "Mary";<br/>
+&nbsp; &nbsp; Person.remove({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; name: nameToRemove<br/>
+&nbsp; &nbsp; }, (err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; });<br/>
+};<br/>
+<br/>
+const queryChain = (done) =&gt; {<br/>
+&nbsp; &nbsp; const foodToSearch = "burrito";<br/>
+&nbsp; &nbsp; Person.find({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; favoriteFoods: foodToSearch<br/>
+&nbsp; &nbsp; }).sort({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; name: 1<br/>
+&nbsp; &nbsp; }).limit(2).select({<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; age: 0<br/>
+&nbsp; &nbsp; }).exec((err, data) =&gt; {<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; if (err) return console.log("Failed in here");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; else console.log("Success");<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; done(null, data);<br/>
+&nbsp; &nbsp; });<br/>
+};<br/>
+<br/>
+/** **Well Done !!**<br/>
+/* You completed these challenges, let's go celebrate !<br/>
+&nbsp;*/<br/>
+<br/>
+//----- **DO NOT EDIT BELOW THIS LINE** ----------------------------------<br/>
+<br/>
+exports.PersonModel = Person;<br/>
+exports.createAndSavePerson = createAndSavePerson;<br/>
+exports.findPeopleByName = findPeopleByName;<br/>
+exports.findOneByFood = findOneByFood;<br/>
+exports.findPersonById = findPersonById;<br/>
+exports.findEditThenSave = findEditThenSave;<br/>
+exports.findAndUpdate = findAndUpdate;<br/>
+exports.createManyPeople = createManyPeople;<br/>
+exports.removeById = removeById;<br/>
+exports.removeManyPeople = removeManyPeople;<br/>
+exports.queryChain = queryChain;</span></span></span></span></span></body></html>

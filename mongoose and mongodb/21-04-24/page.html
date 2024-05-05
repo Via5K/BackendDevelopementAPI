@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>21-04-24</title>
+</head><body>MONGOOSE AND MONGODB<br/>
+<br/>
+<br/>
+We setupt the ATLAS DB, we get a URI string, copy that it is the authenticating URL for us.<br/>
+<b><i><u>MAKE SURE THAT YOU ARE ALLOWED TO CONNECT TO THAT DATABSE FORM ANYWHERE. IF YOU DONT WANT TO GET CONNECTED FROM ANYWHERE, THEN MAKE SURE YOUR IP IS CORRECTLY ADDED IN NETWORK ACCESS.<br/>
+<br/>
+</u></i><u>CRUD<br/>
+<br/>
+</u></b><i>Crud stands for CREATE, READ, UPDATE, DELETE.<br/>
+</i>These are the basic operations that we can perform on a database. <br/>
+1<b>. IN REALTIME SERVER, TEH INTERACTION WITH DATABSE HAPPENS IN HANDLER METHODS<br/>
+</b>done() - functions is a callback function that tells that we can procceed after asyncronous operation such as insert, update, delte, are completed.<br/>
+<br/>
+On success: done(null,data) <br/>
+<b>OR </b><br/>
+On Error: done(err)<br/>
+<br/>
+<b>/* Example */ const someFunc = function(done) { //... do something (risky) ... if (error) return done(error); done(null, result); }; </b><br/>
+<b><br/>
+<u>SCHEMA:</u><br/>
+</b>Schema is used to define what schema we need, we can create that by modelling.<br/>
+<br/>
+Basically, what we are doing here is: creating a obj of personSchema whcih creates a schema object of mongoDB.<br/>
+then, we define our schema inside it.<br/>
+<img src="image.png" /><br/>
+<br/>
+At end, we model that schema to Person. <br/>
+Now we can create person object in db.<br/>
+<br/>
+<b><u>CREATE</u></b><br/>
+Create:<br/>
+<br/>
+<img src="image 2.png" /><br/>
+Creating a new entry for Person with the defined schema.<br/>
+<br/>
+at end, we are calling the objectname.save wherein we are storing that particular object in the databse.<br/>
+<br/>
+<br/>
+<b><u>CREATE: Multiple Objects at once<br/>
+<br/>
+</u></b>Creating many records at once using the model.create()<br/>
+it takes an array of data.<br/>
+<br/>
+accepts parameter and handler fucntion same as model.save()<br/>
+<img src="image 3.png" /><br/>
+<u><b><br/>
+</b></u><br/>
+<u><b><br/>
+</b></u><br/>
+</body></html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>21-04-24</title>
+</head><body>Middleware can be created for specific requests as well.<br/>
+Like we can have for GET req. only or POST etc.<br/>
+<br/>
+Syntax: <b>app.METHOD(path, middlewareFunction)<br/>
+</b><b><br/>
+<br/>
+</b><br/>
+<b>Example:</b><br/>
+app.get('/user', function(req, res, next) { req.user = getTheUserSync(); // Hypothetical synchronous operation next(); }, function(req, res) { res.send(req.user); }); &nbsp;<br/>
+<br/>
+<br/>
+<b>function(req, res, next) &nbsp;=&gt; using this the node knows it is a middleware as it accepts 3 arguments.<br/>
+<br/>
+<br/>
+</b><img src="image.png" /><b><br/>
+</b><b><br/>
+<br/>
+PARAMS:<br/>
+<br/>
+</b>req.params:Creating route on GET to print the value that the user is sending.<br/>
+we can do that by creating a route.<br/>
+Also req.params.KEY can give us the value of the parameter sent as well. <br/>
+<b><br/>
+</b><img src="image 2.png" /><b><br/>
+</b><br/>
+<br/>
+<br/>
+<b>QUERY PARAMTER:<br/>
+<br/>
+</b>Another kind of input that we can get from client.<br/>
+Express can parse the query string automatically and store that in <b>req.query </b>now<br/>
+<br/>
+<br/>
+We can also use format something like this if we are getting the different Requests on the same route.<br/>
+<b>app.route(path).request(handler).request(handler)</b>.....etc;<br/>
+<br/>
+Example:<br/>
+<img src="image 3.png" /><br/>
+<br/>
+<br/>
+&nbsp;when the data is being sent as a post req. it comes encoded in form of &amp; example: firstname=neeraj&amp;lastname=nautiyal.<br/>
+<br/>
+We can directly parse this using Express which will give this to us in JSON format<br/>
+example:<br/>
+{<br/>
+"firstname":"neeraj",<br/>
+"lastname":"nautiyal"<br/>
+}<br/>
+<br/>
+In order to do that we have to mark extended as false, NOTE that this only works if we are working on array, strings. For any other complex criteria we have to use extended=true.<br/>
+<br/>
+<b>Syntax:</b><br/>
+It is added on top<ul><li style="list-style-type: none"><b>app.use(bodyParser.urlencoded({encoded:false}));</b></li>
+</ul>
+Where bodyParser is the variable name to which we required body-parser.<br/>
+<br/>
+<img src="image 4.png" /><br/>
+<br/>
+<br/>
+<br/>
+<br/>
+</body></html>
